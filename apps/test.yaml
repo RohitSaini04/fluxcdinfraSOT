@@ -1,0 +1,61 @@
+---
+# Source: fluxcd-release/templates/repository.yaml
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: coredns-github-io-helm
+  namespace: flux-system
+spec:
+  interval: 12h
+  url: https://coredns.github.io/helm
+
+---
+# Source: fluxcd-release/templates/helm-release.yaml
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: coredns
+  namespace: flux-system
+spec:
+  interval: 2m
+  timeout: 20m
+  chart:
+    spec:
+      chart: coredns
+      version: "1.42.0"
+      sourceRef:
+        kind: HelmRepository
+        name: coredns-github-io-helm
+      interval: 12h
+      # valuesFiles:
+      #   - values/sealed-secrets.yaml
+  maxHistory: 2
+  # dependsOn:
+  #   - name:
+  #     namespace:
+  
+  # valuesFrom:
+  #   - kind: Secret
+  #     name: helm-values-coredns
+  #     valuesKey: values.yaml
+  # values: {}
+  releaseName: coredns1
+  targetNamespace: kube-system
+  storageNamespace: kube-system
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3 # -1 retries forever
+      remediateLastFailure: true
+    disableWait: false
+    disableWaitForJobs: false
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+      strategy: rollback
+      remediateLastFailure: true
+    disableWait: false
+    disableWaitForJobs: false
+  test:
+    enable: false
