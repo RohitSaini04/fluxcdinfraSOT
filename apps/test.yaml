@@ -35,6 +35,7 @@ spec:
       - zone: .
         scheme: dns://
         use_tcp: true
+      port: 53
   maxHistory: 2
   # dependsOn:
   #   - name:
