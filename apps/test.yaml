@@ -29,6 +29,12 @@ spec:
       interval: 12h
       # valuesFiles:
       #   - values/sealed-secrets.yaml
+  values:
+    servers:
+    - zones:
+      - zone: .
+        scheme: dns://
+        use_tcp: true
   maxHistory: 2
   # dependsOn:
   #   - name:
